@@ -55,8 +55,8 @@ num_opened = emails_proc['user_opened'].sum()
 num_clicked = emails_proc['user_clicked'].sum()
 total_emails = emails_proc.shape[0]
 
-print(f'{num_opened / total_emails: 2.2f}% of the emails were opened')
-print(f'{num_clicked / total_emails: 2.2f}% of the emails were clicked')
+print(f'{num_opened / total_emails * 100: 2.2f}% of the emails were opened')
+print(f'{num_clicked / total_emails * 100: 2.2f}% of the emails were clicked')
 
 # Ask the user before fitting the Random Forest classifier
 if input('Continue fitting model? (y/n)') in ['n', 'N', 'no', 'No']:
