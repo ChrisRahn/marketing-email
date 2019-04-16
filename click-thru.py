@@ -8,9 +8,13 @@ Please see the README for info about the data tables
 '''
 
 import sys
+from itertools import accumulate
+import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import f1_score
+import matplotlib.pyplot as plt
 
 # Load the data tables into separate pandas DataFrames
 emails = pd.read_csv('data/email_table.csv')
@@ -87,3 +91,18 @@ print('Done! I found that these parameters worked best:')
 print(f'{best_forest.best_params_}')
 print(f'These resulted in an F1 score of {best_forest.best_score_:.4f}')
 
+# Apply the Random Forest model to find predicted probabilities of clicking
+predictions = emails_proc.copy()
+predictions['click_prob'] = best_forest.predict_proba(X)[:, 1]
+
+# Build a cumulative accuracy profile for the model
+# Sort by the actual labels to assume the ideal case
+ideal = predictions['user_clicked'].sort_values(ascending=False)
+ideal = np.array(list(accumulate(ideal)), dtype=np.int)
+
+# Sort the predictions with highest predictions at top as if you were guessing
+predictions.sort_values('click_prob', ascending=False, inplace=True)
+clicks = np.array(list(accumulate(predictions['user_clicked'])), dtype=np.int)
+
+plt.plot(ideal)
+plt.plot(clicks)
